@@ -20,7 +20,7 @@ def gcd_fast(a, b):
 
 
 def lcm_fast(a, b):
-    return int(a * b / gcd_fast(a, b))
+    return int(a * b // gcd_fast(a, b))
 
 
 if __name__ == '__main__':

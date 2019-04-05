@@ -15,16 +15,15 @@ def get_fibonacci_last_digit_naive(n):
 
 
 def get_fibonacci_last_digit_fast(n):
-    fibs = [0, 1]
+    previous, current = 0, 1
 
     for i in range(2, n + 1):
-        fibs.append(fibs[i - 1] + fibs[i - 2])
+        previous, current = current % 10, (current + previous) % 10
 
-    return int(str(fibs[-1])[-1])
+    return current % 10
 
 
 if __name__ == '__main__':
     input = sys.stdin.read()
     n = int(input)
-    print(n)
     print(get_fibonacci_last_digit_fast(n))

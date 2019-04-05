@@ -19,18 +19,18 @@ def calc_fib(n):
     for i in range(2, n + 1):
         fibs.append(fibs[i - 1] + fibs[i - 2])
 
-    return fibs[-1]
+    return fibs[n]
 
 
 def get_fibonacci_huge_fast(n, m):
-    period = 0
+    if n in [0, 1]:
+        return n % m
+    period = None
     previous, current = 0, 1
-    fibs_mod = [0 % m, 1 % m]
 
-    for i in range(2, m * m):
-        previous, current = current, current + previous
-        fibs_mod.append(current % m)
-        if fibs_mod[-1] == 1 and fibs_mod[-2] == 0:
+    for i in range(2, m * m + 1):
+        previous, current = current % m, (current + previous) % m
+        if current == 1 and previous == 0:
             period = i - 1
             break
 

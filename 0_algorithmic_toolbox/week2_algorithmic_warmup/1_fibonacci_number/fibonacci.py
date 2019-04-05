@@ -4,7 +4,7 @@ def calc_fib(n):
     for i in range(2, n + 1):
         fibs.append(fibs[i - 1] + fibs[i - 2])
 
-    return fibs[-1]
+    return fibs[n]
 
 
 n = int(input())
