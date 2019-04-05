@@ -26,36 +26,29 @@ def fibonacci_partial_sum_fast(from_, to):
 
     # Initialize all the things
     mod = 10
+    period = 60  # period_sum_mod = 0, so it doesn't affect last digit
     previous, current = 0, 1
-    period = 60
     fib_sum_mod = 0
-    period_sum = 1
+
+    # Iterate through from_ up to the end of a period
+    from_mod = from_ % period
+    to_reset = to - from_ // period * period
 
     # Case when we start at from <= 1
-    if from_ <= 1:
+    if from_mod <= 1:
         fib_sum_mod += 1
 
-    # Iterate through a period's worth of values
     for i in range(2, period + 1):
-        # Calculate fib numbers
         previous, current = current % mod, (current + previous) % mod
 
-        # All values get added to period sum
-        period_sum += current
-        period_sum %= mod
-
-        # Only add these values if i is in the from - to range
-        if from_ <= i <= to:
+        if from_mod <= i <= to_reset:
             fib_sum_mod += current
             fib_sum_mod %= mod
 
-    if to <= period:
+    if to_reset <= period:
         return fib_sum_mod
 
-    n_periods = (to - from_) // period - 1
-    n_periods = 0 if n_periods < 0 else n_periods
-    fib_sum_mod += n_periods * period_sum
-    fib_sum_mod %= mod
+    n_periods = to // period - 1
 
     previous, current = 0, 1
     fib_sum_mod += 1
