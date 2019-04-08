@@ -1,34 +1,34 @@
-# Uses python3
 import sys
 import random
 
 
 def partition3(a, l, r):
-    x = a[l]  # Get pivot
-    j = l  # Set end of values less than pivot
-    k = l  # Set end of values equal to pivot
+    pivot = a[l]  # Pivot
+    equal_idx = l  # Equal elements end index
+    less_idx = l  # Less than element end index
 
-    for i in range(l + 1, r + 1):
-        if a[i] == x:  # If it's equal to the pivot
-            j += 1
-            k += 1
-            # Swap the current element and the equal to
-            a[k], a[i] = a[i], a[k]
+    for current_idx in range(l + 1, r + 1):
+        if a[current_idx] < pivot:
+            less_idx += 1
+            a[less_idx], a[current_idx] = a[current_idx], a[less_idx]
+        elif a[current_idx] == pivot:
+            less_idx += 1
+            equal_idx += 1
 
-            # Swap the current element and the less than to get it back in place
-            if j > k:
-                a[j], a[i] = a[i], a[j]
-        elif a[i] < x:
-            j += 1
-            a[i], a[j] = a[j], a[i] # Swap the less than value and current value
+            # Put the current value at the end of the equals
+            a[equal_idx], a[current_idx] = a[current_idx], a[equal_idx]
 
-    # Swap the less thans and equal tos
-    equals_idx = 0
-    for i in range(k + 1, j + 1):
-        a[equals_idx], a[i] = a[i], a[equals_idx]
-        equals_idx += 1
+            # If there are actually less thans
+            if less_idx > equal_idx:
+                # The less than just got moved to the current position; move it back
+                a[less_idx], a[current_idx] = a[current_idx], a[less_idx]
 
-    return j - k, j + 1
+    # Swap equals and less thans
+    equal_pos = l  # Start at where the equals begin
+    for i in range(equal_idx + 1, less_idx + 1):
+        a[equal_pos], a[i] = a[i], a[equal_pos]
+        equal_pos += 1
+    return less_idx, less_idx - (equal_idx - l) + 1
 
 
 def partition2(a, l, r):
@@ -49,8 +49,8 @@ def randomized_quick_sort(a, l, r):
     a[l], a[k] = a[k], a[l]  # In place swap
     #use partition3
     m1, m2 = partition3(a, l, r)
-    randomized_quick_sort(a, l, m1 - 1);
-    randomized_quick_sort(a, m2 + 1, r);
+    randomized_quick_sort(a, l, m1)
+    randomized_quick_sort(a, m2, r)
 
 
 if __name__ == '__main__':
