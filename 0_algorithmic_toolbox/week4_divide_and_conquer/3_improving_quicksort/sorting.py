@@ -3,7 +3,7 @@ import sys
 import random
 
 
-def partition3(a, l, r):
+def partition3_lomuto(a, l, r):
     pivot = a[l]  # Pivot
     equal_idx = l  # Equal elements end index
     less_idx = l  # Less than element end index
@@ -29,7 +29,30 @@ def partition3(a, l, r):
     for i in range(equal_idx + 1, less_idx + 1):
         a[equal_pos], a[i] = a[i], a[equal_pos]
         equal_pos += 1
-    return less_idx, less_idx - (equal_idx - l) + 1
+    return less_idx, less_idx - (equal_idx - l)
+
+
+def partition3(a, l, r):
+    """Hoare's partition:  https://en.wikipedia.org/wiki/Quicksort#Hoare_partition_scheme"""
+    pivot = a[l]
+    low = l
+    high = r
+    i = l
+
+    while i <= high:
+        # Move low points to the front
+        if a[i] < pivot:
+            a[i], a[low] = a[low], a[i]
+            low += 1
+            i += 1
+        # Move high points to the end
+        elif a[i] > pivot:
+            a[i], a[high] = a[high], a[i]
+            high -= 1
+        else:
+            i += 1
+
+    return low, high
 
 
 def partition2(a, l, r):
@@ -51,7 +74,7 @@ def randomized_quick_sort(a, l, r):
     #use partition3
     m1, m2 = partition3(a, l, r)
     randomized_quick_sort(a, l, m1 - 1)
-    randomized_quick_sort(a, m2, r)
+    randomized_quick_sort(a, m2 + 1, r)
 
 
 if __name__ == '__main__':
