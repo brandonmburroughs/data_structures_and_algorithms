@@ -22,6 +22,9 @@ def merge(b, c):
             merged_list.append(b[i])
             i += 1
         else:
+            # Since it's sorted, we know that everything in b is now greater than this
+            # element of c; this means there are as many inversions as there are
+            # remaining elements in b.
             number_of_inversions_across_merge += len(b[i:])
             merged_list.append(c[j])
             j += 1
