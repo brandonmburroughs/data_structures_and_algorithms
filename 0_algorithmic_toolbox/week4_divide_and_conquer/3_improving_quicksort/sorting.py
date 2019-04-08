@@ -50,7 +50,7 @@ def randomized_quick_sort(a, l, r):
     a[l], a[k] = a[k], a[l]  # In place swap
     #use partition3
     m1, m2 = partition3(a, l, r)
-    randomized_quick_sort(a, l, m1)
+    randomized_quick_sort(a, l, m1 - 1)
     randomized_quick_sort(a, m2, r)
 
 
