@@ -11,7 +11,7 @@ def binary_search(a, x):
         if a[mid] == x:
             return mid
         elif x < a[mid]:
-            high = mid - 1
+            high = mid
         else:
             low = mid + 1
 
