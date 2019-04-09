@@ -6,13 +6,7 @@ def fast_count_segments(starts, ends, points):
     cnt = [0] * len(points)
 
     # Put all points in one large array that can be sorted
-    all_points = []
-    for start in starts:
-        all_points.append((start, 'l'))
-    for end in ends:
-        all_points.append((end, 'r'))
-    for point in points:
-        all_points.append((point, 'p'))
+    all_points = starts + ends + points
     # Sort by point value and then lexical to get l, p, r order if tied
     all_points = sorted(all_points, key=lambda tup: (tup[0], tup[1]))
 
@@ -23,7 +17,7 @@ def fast_count_segments(starts, ends, points):
         elif point_type == "r":
             r += 1
         else:
-            cnt[points.index(point)] += l - r
+            cnt[points.index((point, point_type))] += l - r
 
     return cnt
 
@@ -42,9 +36,17 @@ if __name__ == '__main__':
     data = list(map(int, input.split()))
     n = data[0]
     m = data[1]
-    starts = data[2:2 * n + 2:2]
-    ends   = data[3:2 * n + 2:2]
-    points = data[2 * n + 2:]
+    starts = []
+    ends = []
+    for i in range(2, 2 * n + 2, 2):
+        starts.append((data[i], "l"))
+    for i in range(3, 2 * n + 2, 2):
+        ends.append((data[i], "r"))
+
+    points = []
+    for i in range(2 * n + 2, len(data)):
+        points.append((data[i], "p"))
+
     #use fast_count_segments
     cnt = fast_count_segments(starts, ends, points)
     for x in cnt:
