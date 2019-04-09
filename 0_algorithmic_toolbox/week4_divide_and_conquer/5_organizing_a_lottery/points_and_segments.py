@@ -5,19 +5,25 @@ import sys
 def fast_count_segments(starts, ends, points):
     cnt = [0] * len(points)
 
-    if len(starts) == 1:
-        for i, point in enumerate(points):
-            if starts[0] <= point <= ends[0]:
-                cnt[i] += 1
+    # Put all points in one large array that can be sorted
+    all_points = []
+    for start in starts:
+        all_points.append((start, 'l'))
+    for end in ends:
+        all_points.append((end, 'r'))
+    for point in points:
+        all_points.append((point, 'p'))
+    # Sort by point value and then lexical to get l, p, r order if tied
+    all_points = sorted(all_points, key=lambda tup: (tup[0], tup[1]))
 
-        return cnt
-
-    mid = len(starts) // 2
-    left_cnt = fast_count_segments(starts[mid:], ends[mid:], points)
-    right_cnt = fast_count_segments(starts[:mid], ends[:mid], points)
-
-    for i in range(len(left_cnt)):
-        cnt[i] = left_cnt[i] + right_cnt[i]
+    l, r = 0, 0
+    for point, point_type in all_points:
+        if point_type == "l":
+            l += 1
+        elif point_type == "r":
+            r += 1
+        else:
+            cnt[points.index(point)] += l - r
 
     return cnt
 
