@@ -86,15 +86,15 @@ def minimum_distance_too_slow(x, y):
 def minimum_distance_sorted(x, y):
     # Handle base cases for small groups of points
     if len(x) == 1:
-        return sys.maxsize
+        return sys.maxsize, y
     if len(x) == 2:
-        return compute_distance(x[0][0], x[1][0], x[0][1], x[1][1])
+        return compute_distance(x[0][0], x[1][0], x[0][1], x[1][1]), sorted(y, key=lambda tup: tup[1])
     elif len(x) == 3:
         return min(
             compute_distance(x[0][0], x[1][0], x[0][1], x[1][1]),
             compute_distance(x[0][0], x[2][0], x[0][1], x[2][1]),
             compute_distance(x[1][0], x[2][0], x[1][1], x[2][1]),
-        )
+        ), sorted(y, key=lambda tup: tup[1])
 
     # Get x coordinate that splits data into two equal sets
     mid = len(x) // 2
@@ -103,22 +103,36 @@ def minimum_distance_sorted(x, y):
     # Get corresponding y coordinates
     s1_y, s2_y = [], []
     for x_i, y_i in y:
-        if x_i <= mid_x:
+        if x_i < mid_x:
             s1_y.append((x_i, y_i))
         else:
             s2_y.append((x_i, y_i))
 
     # Divide into subproblems
-    min_distance_left = minimum_distance_sorted(x[:mid], s1_y)
-    min_distance_right = minimum_distance_sorted(x[mid:], s2_y)
+    min_distance_left, sorted_left_y = minimum_distance_sorted(x[:mid], s1_y)
+    min_distance_right, sorted_right_y = minimum_distance_sorted(x[mid:], s2_y)
     min_distance = min(min_distance_left, min_distance_right)
 
     # Check min distance for points that are in either set
     filtered_points_in_strip = []
-    for x_i, y_i in y:
+    sorted_y = []
+    i, j = 0, 0
+    while i < len(sorted_left_y) and j < len(sorted_right_y):
+        if sorted_left_y[i][1] <= sorted_right_y[j][1]:
+            sorted_y.append(sorted_left_y[i])
+            if math.fabs(sorted_left_y[i][0] - mid_x) < min_distance:
+                filtered_points_in_strip.append(sorted_left_y[i])
+            i += 1
+        else:
+            sorted_y.append(sorted_right_y[j])
+            if math.fabs(sorted_right_y[j][0] - mid_x) < min_distance:
+                filtered_points_in_strip.append(sorted_right_y[j])
+            j += 1
+
+    for x_i, y_i in sorted_left_y[i:] + sorted_right_y[j:]:
+        sorted_y.append((x_i, y_i))
         if math.fabs(x_i - mid_x) < min_distance:
             filtered_points_in_strip.append((x_i, y_i))
-    filtered_points_in_strip = sorted(filtered_points_in_strip, key=lambda tup: tup[1])
 
     for i in range(0, len(filtered_points_in_strip)):
         for j in range(i + 1, min(len(filtered_points_in_strip), i + 7)):
@@ -129,18 +143,17 @@ def minimum_distance_sorted(x, y):
             if dist < min_distance:
                 min_distance = dist
 
-    return min_distance
+    return min_distance, sorted_y
 
 
 def minimum_distance(x, y):
     points = list(zip(x, y))
     sorted_x_points = sorted(points, key=lambda tup: tup[0])
 
-    return minimum_distance_sorted(sorted_x_points, points)
+    return minimum_distance_sorted(sorted_x_points, points)[0]
 
 
 if __name__ == '__main__':
-
     input = sys.stdin.read()
     data = list(map(int, input.split()))
     n = data[0]
