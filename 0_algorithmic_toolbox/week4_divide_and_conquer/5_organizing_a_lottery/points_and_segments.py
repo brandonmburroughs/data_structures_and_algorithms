@@ -1,6 +1,7 @@
 # Uses python3
 import sys
 import collections
+import datetime
 
 
 def fast_count_segments(starts, ends, points):
@@ -14,8 +15,7 @@ def fast_count_segments(starts, ends, points):
     for end in ends:
         all_points.append((end, 'r'))
     for i, point in enumerate(points):
-        new_point = (point, 'p')
-        if new_point not in all_points:
+        if point not in points_map:
             all_points.append((point, 'p'))
         points_map[point].add(i)
     # Sort by point value and then lexical to get l, p, r order if tied
