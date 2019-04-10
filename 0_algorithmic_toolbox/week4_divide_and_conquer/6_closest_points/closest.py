@@ -147,38 +147,9 @@ def minimum_distance(x, y):
 
 
 if __name__ == '__main__':
-    import random
-
-    i = 0
-
-    while True:
-        n = random.randint(2, 6)
-        x = [random.randint(-10, 10) for _ in range(n)]
-        y = [random.randint(-10, 10) for _ in range(n)]
-
-        try:
-            min_distance = minimum_distance(x, y)
-        except:
-            print(f"Recursion error for n = {n}, x = {x}, y = {y}")
-            break
-
-        min_distance_brute_force = minimum_distance_brute_force(x, y)
-
-        try:
-            assert min_distance == min_distance_brute_force
-        except:
-            print(f"Error at n = {n}, x = {x}, y = {y}, min_distnace = {min_distance}, min_distance_brute_force = {min_distance_brute_force}")
-            break
-
-        i += 1
-
-        if i % 10000 == 0:
-            print(f"{i} successful runs!")
-    """
     input = sys.stdin.read()
     data = list(map(int, input.split()))
     n = data[0]
     x = data[1::2]
     y = data[2::2]
     print("{0:.9f}".format(minimum_distance(x, y)))
-    """
