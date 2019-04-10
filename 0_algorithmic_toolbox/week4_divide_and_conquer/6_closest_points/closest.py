@@ -1,6 +1,7 @@
 #Uses python3
 import sys
 import math
+import datetime
 
 
 def compute_distance(x1, x2, y1, y2):
@@ -84,79 +85,100 @@ def minimum_distance_too_slow(x, y):
 
 
 def minimum_distance_sorted(x, y):
+    n_x = len(x)
+
     # Handle base cases for small groups of points
-    if len(x) == 1:
-        return sys.maxsize, y
-    if len(x) == 2:
-        return compute_distance(x[0][0], x[1][0], x[0][1], x[1][1]), sorted(y, key=lambda tup: tup[1])
-    elif len(x) == 3:
+    if n_x == 1:
+        return sys.maxsize
+    if n_x == 2:
+        return compute_distance(x[0][0], x[1][0], x[0][1], x[1][1])
+    elif n_x == 3:
         return min(
             compute_distance(x[0][0], x[1][0], x[0][1], x[1][1]),
             compute_distance(x[0][0], x[2][0], x[0][1], x[2][1]),
             compute_distance(x[1][0], x[2][0], x[1][1], x[2][1]),
-        ), sorted(y, key=lambda tup: tup[1])
+        )
 
     # Get x coordinate that splits data into two equal sets
-    mid = len(x) // 2
+    mid = n_x // 2
     mid_x = x[mid][0]
+    s1_x = x[:mid]
+    s2_x = x[mid:]
+    s1_x_set = set(s1_x)
 
     # Get corresponding y coordinates
     s1_y, s2_y = [], []
-    for x_i, y_i in y:
-        if x_i < mid_x:
-            s1_y.append((x_i, y_i))
+    for y_pair in y:
+        if y_pair in s1_x_set:
+            s1_y.append(y_pair)
         else:
-            s2_y.append((x_i, y_i))
+            s2_y.append(y_pair)
 
     # Divide into subproblems
-    min_distance_left, sorted_left_y = minimum_distance_sorted(x[:mid], s1_y)
-    min_distance_right, sorted_right_y = minimum_distance_sorted(x[mid:], s2_y)
+    min_distance_left = minimum_distance_sorted(s1_x, s1_y)
+    min_distance_right = minimum_distance_sorted(s2_x, s2_y)
     min_distance = min(min_distance_left, min_distance_right)
 
     # Check min distance for points that are in either set
     filtered_points_in_strip = []
-    sorted_y = []
-    i, j = 0, 0
-    while i < len(sorted_left_y) and j < len(sorted_right_y):
-        if sorted_left_y[i][1] <= sorted_right_y[j][1]:
-            sorted_y.append(sorted_left_y[i])
-            if math.fabs(sorted_left_y[i][0] - mid_x) < min_distance:
-                filtered_points_in_strip.append(sorted_left_y[i])
-            i += 1
-        else:
-            sorted_y.append(sorted_right_y[j])
-            if math.fabs(sorted_right_y[j][0] - mid_x) < min_distance:
-                filtered_points_in_strip.append(sorted_right_y[j])
-            j += 1
+    for y_pair in y:
+        if math.fabs(y_pair[0] - mid_x) < min_distance:
+            filtered_points_in_strip.append(y_pair)
 
-    for x_i, y_i in sorted_left_y[i:] + sorted_right_y[j:]:
-        sorted_y.append((x_i, y_i))
-        if math.fabs(x_i - mid_x) < min_distance:
-            filtered_points_in_strip.append((x_i, y_i))
-
-    for i in range(0, len(filtered_points_in_strip)):
-        for j in range(i + 1, min(len(filtered_points_in_strip), i + 7)):
-            #print(f"i = {i}, j = {j}")
+    # Check point in center strip
+    n_strip = len(filtered_points_in_strip)
+    for i in range(n_strip):
+        for j in range(i + 1, min(n_strip, i + 7)):
             x2, y2 = filtered_points_in_strip[j]
             x1, y1 = filtered_points_in_strip[i]
             dist = compute_distance(x1, x2, y1, y2)
             if dist < min_distance:
                 min_distance = dist
 
-    return min_distance, sorted_y
+    return min_distance
 
 
 def minimum_distance(x, y):
     points = list(zip(x, y))
     sorted_x_points = sorted(points, key=lambda tup: tup[0])
+    sorted_y_points = sorted(points, key=lambda tup: tup[1])
 
-    return minimum_distance_sorted(sorted_x_points, points)[0]
+    return minimum_distance_sorted(sorted_x_points, sorted_y_points)
 
 
 if __name__ == '__main__':
+    import random
+
+    i = 0
+
+    while True:
+        n = random.randint(2, 6)
+        x = [random.randint(-10, 10) for _ in range(n)]
+        y = [random.randint(-10, 10) for _ in range(n)]
+
+        try:
+            min_distance = minimum_distance(x, y)
+        except:
+            print(f"Recursion error for n = {n}, x = {x}, y = {y}")
+            break
+
+        min_distance_brute_force = minimum_distance_brute_force(x, y)
+
+        try:
+            assert min_distance == min_distance_brute_force
+        except:
+            print(f"Error at n = {n}, x = {x}, y = {y}, min_distnace = {min_distance}, min_distance_brute_force = {min_distance_brute_force}")
+            break
+
+        i += 1
+
+        if i % 10000 == 0:
+            print(f"{i} successful runs!")
+    """
     input = sys.stdin.read()
     data = list(map(int, input.split()))
     n = data[0]
     x = data[1::2]
     y = data[2::2]
     print("{0:.9f}".format(minimum_distance(x, y)))
+    """
