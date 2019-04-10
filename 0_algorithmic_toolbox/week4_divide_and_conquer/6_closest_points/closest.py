@@ -118,6 +118,7 @@ def minimum_distance_sorted(x, y):
     for x_i, y_i in y:
         if math.fabs(x_i - mid_x) < min_distance:
             filtered_points_in_strip.append((x_i, y_i))
+    filtered_points_in_strip = sorted(filtered_points_in_strip, key=lambda tup: tup[1])
 
     for i in range(0, len(filtered_points_in_strip)):
         for j in range(i + 1, min(len(filtered_points_in_strip), i + 7)):
@@ -134,12 +135,12 @@ def minimum_distance_sorted(x, y):
 def minimum_distance(x, y):
     points = list(zip(x, y))
     sorted_x_points = sorted(points, key=lambda tup: tup[0])
-    sorted_y_points = sorted(points, key=lambda tup: tup[1])
 
-    return minimum_distance_sorted(sorted_x_points, sorted_y_points)
+    return minimum_distance_sorted(sorted_x_points, points)
 
 
 if __name__ == '__main__':
+
     input = sys.stdin.read()
     data = list(map(int, input.split()))
     n = data[0]
