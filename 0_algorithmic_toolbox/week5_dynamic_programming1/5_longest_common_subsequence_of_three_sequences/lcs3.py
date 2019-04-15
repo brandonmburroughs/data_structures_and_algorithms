@@ -41,15 +41,7 @@ def lcs3(a, b, c):
     m = len(b)
     l = len(c)
 
-    longest_common_subsequence_length = []
-    for i in range(n + 1):
-        row1 = []
-        for j in range(m + 1):
-            row2 = []
-            for k in range(l + 1):
-                row2.append(0)
-            row1.append(row2)
-        longest_common_subsequence_length.append(row1)
+    longest_common_subsequence_length = [[[0 for _ in range(l + 1)] for _ in range(m + 1)] for _ in range(n + 1)]
 
     for i in range(1, n + 1):
         for j in range(1, m + 1):
