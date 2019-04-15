@@ -12,7 +12,7 @@ def subset_matrix(matrix, i, j):
     return [row[:j] for row in matrix[:i]]
 
 
-def lcs2(a, b):
+def lcs2_slower(a, b):  # Looping through matrix in matrix_max and subset_matrix is slow
     n = len(a)
     m = len(b)
 
@@ -27,6 +27,25 @@ def lcs2(a, b):
         for j in range(1, m + 1):
             if a[i - 1] == b[j - 1]:
                 longest_common_subsequence_lengths[i][j] = matrix_max(subset_matrix(longest_common_subsequence_lengths, i, j)) + 1
+
+    return matrix_max(longest_common_subsequence_lengths)
+
+
+def lcs2(a, b):
+    n = len(a)
+    m = len(b)
+
+    longest_common_subsequence_lengths = [[0 for _ in range(m + 1)] for _ in range(n + 1)]
+
+    for i in range(1, n + 1):
+        for j in range(1, m + 1):
+            if a[i - 1] == b[j - 1]:
+                longest_common_subsequence_lengths[i][j] = longest_common_subsequence_lengths[i - 1][j - 1] + 1
+            else:
+                longest_common_subsequence_lengths[i][j] = max(
+                    longest_common_subsequence_lengths[i - 1][j],
+                    longest_common_subsequence_lengths[i][j - 1]
+                )
 
     return matrix_max(longest_common_subsequence_lengths)
 
